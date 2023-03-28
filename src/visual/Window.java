@@ -24,6 +24,7 @@ class Window {
     // Other class creations
     private MazeGenerator generator = new MazeGenerator();
     private Sound sound = new Sound();
+    private boolean fading = false;
 
     // All graphical componenets
     private GraphicsText x_label = new GraphicsText();
@@ -31,8 +32,10 @@ class Window {
     private TextField grid_x = new TextField();
     private TextField grid_y = new TextField();
     private Button generate_maze = new Button("Generate Maze");
-    
     private final CanvasWindow canvas = new CanvasWindow("a-maze-ing", CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    // TESTING
+    private int tracker = 0;
 
     public Window() {
         setupUI();
@@ -40,6 +43,17 @@ class Window {
         canvas.animate(() -> {
             if (generating_maze) {
                 generator.update();
+                tracker++;
+                if (tracker > 400) {
+                    tracker = 0;
+                    generating_maze = false;
+                    fading = true;
+                }
+            }
+
+            // Check to see if we should fade the sound for an outro
+            if (fading) {
+                fading = sound.fade();
             }
         });
     }
@@ -73,8 +87,10 @@ class Window {
             generateGrid();
         });
         generate_maze.onClick(() -> {
+            tracker = 0;
             sound.start(); // Starts lit soundtrack
             generating_maze = true;
+            fading = false;
         });
 
         // Add all to canvas
