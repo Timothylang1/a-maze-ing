@@ -44,7 +44,7 @@ class Window {
             if (generating_maze) {
                 generator.update();
                 tracker++;
-                if (tracker > 400) {
+                if (tracker > 900) {
                     tracker = 0;
                     generating_maze = false;
                     fading = true;
