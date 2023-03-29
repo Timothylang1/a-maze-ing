@@ -21,5 +21,13 @@ public class Block extends Rectangle {
         setStrokeColor(colorCode.get(1));
         setFillColor(colorCode.get(0));
     }
+
+    /*
+     * Sets color of rectangle based on hashmap
+     */
+    public void setFill(int color) {
+        setStrokeColor(colorCode.get(color));
+        setFillColor(colorCode.get(color));
+    }
     
 }

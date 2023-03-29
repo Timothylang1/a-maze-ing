@@ -34,20 +34,24 @@ class Window {
     private Button generate_maze = new Button("Generate Maze");
     private final CanvasWindow canvas = new CanvasWindow("a-maze-ing", CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // TESTING
-    private int tracker = 0;
-
     public Window() {
         setupUI();
         generateGrid();
         canvas.animate(() -> {
             if (generating_maze) {
-                generator.update();
-                tracker++;
-                if (tracker > 900) {
-                    tracker = 0;
+                ArrayList<Integer> incoming_updates = generator.update();
+                // if the list of updates is empty, then we have finished generating the maze
+                if (incoming_updates.isEmpty()) {
                     generating_maze = false;
                     fading = true;
+                }
+                else {
+                    for (int instruction = 0; instruction < incoming_updates.size(); instruction += 3) {
+                        int x_coor = incoming_updates.get(instruction);
+                        int y_coor = incoming_updates.get(instruction + 1);
+                        int color = incoming_updates.get(instruction + 2);
+                        blocks.get(x_coor).get(y_coor).setFill(color);
+                    }
                 }
             }
 
@@ -79,15 +83,16 @@ class Window {
         grid_x.onChange(string -> {
             grid_size_x = checkInt(string);
             generating_maze = false;
+            fading = true;
             generateGrid();
         });
         grid_y.onChange(string -> {
             grid_size_y = checkInt(string);
             generating_maze = false;
+            fading = true;
             generateGrid();
         });
         generate_maze.onClick(() -> {
-            tracker = 0;
             sound.start(); // Starts lit soundtrack
             generating_maze = true;
             fading = false;
