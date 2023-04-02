@@ -13,21 +13,22 @@ public class MazeGenerator {
     ArrayList<Integer> visualPathArray;
     ArrayList<Point> potentialPoints;
 
+
     public MazeGenerator() {
         mazeMatrix = new ArrayList<ArrayList<Integer>>();
         randomGenerator = new Random();
         potentialPoints = new ArrayList<Point>();
         visualPathArray = new ArrayList<Integer>();
-
-        potentialPoints.add(new Point(0, 0));
     }
 
     public ArrayList<Integer> setMazeSize(int x, int y) {
         // Create a matrix of size x and y. All values set to zero at first because everything is a wall.
         // The matrix will have the coordinate system (x, y)
+        // Returns the start and end block
         mazeMatrix.clear();
         visualPathArray.clear();
-
+        potentialPoints.clear();
+        
         grid_size_x = x;
         grid_size_y = y;
         for (int xCoord = 0; xCoord < x; xCoord++){
@@ -37,9 +38,15 @@ public class MazeGenerator {
             }
         }
 
+        // Update Starting Block
         setMatrix(new Point(0, 0), 2);
         addToVisual(new Point(0, 0), 2);
+        addToPotentialPoints(new Point(1, 0));
+        addToPotentialPoints(new Point(0, 1));
 
+
+
+        // Update Ending Block 
         setMatrix(new Point(grid_size_x - 1, grid_size_y - 1), 3);
         addToVisual(new Point(grid_size_x - 1, grid_size_y - 1), 3);
 
@@ -52,89 +59,88 @@ public class MazeGenerator {
         // The first value is an x-value
         // The second value is an y-value
         // The third value is a Color Code.
-
-        // Start @ (0, 0)
-        mazeMatrix.get(0).set(0, 2);
-        visualPathArray.add(0);
-        visualPathArray.add(0);
-        visualPathArray.add(2);
-
-        // End @ (19, 19)
-        mazeMatrix.get(grid_size_x-1).set(grid_size_y-1, 3);
-        visualPathArray.add(grid_size_x-1);
-        visualPathArray.add(grid_size_y-1);
-        visualPathArray.add(3);
+        
+        visualPathArray.clear();
         // System.out.println(mazeMatrix);
 
         // Potential paths are 1 block away from a current block.
         // From the start, I can't go negative direction.
 
         // From (0, 0), my potential paths are (1, 0) or (0, 1), which means I'm moving in only one axis.
-        Point endPoint = new Point(grid_size_x - 1, grid_size_y-1);
-
-        ArrayList<Point> connectedPaths = new ArrayList<Point>();
-
+        int connectedPaths = 0;
+    
         // Remove the chosenPoint from the potentialPaths list
+        if (potentialPoints.size() == 0) {
+            return visualPathArray;
+        }
         Point chosenPoint = potentialPoints.remove(randomGenerator.nextInt(potentialPoints.size()));       // random.nextInt()'s bound is exclusive        
 
-        if (chosenPoint.getX() + 1 >= 0 && chosenPoint.getX() + 1 < grid_size_x) {
-            int xPosition = chosenPoint.getX() + 1;
-            Point potPathX1 = new Point(xPosition, chosenPoint.getY());
-            
+        Point potRightPoint = new Point(chosenPoint.getX() + 1, chosenPoint.getY());
+        Point potLeftPoint = new Point(chosenPoint.getX() - 1, chosenPoint.getY());
+        Point potBottomPoint = new Point(chosenPoint.getX(), chosenPoint.getY() + 1);
+        Point potTopPoint = new Point(chosenPoint.getX(), chosenPoint.getY() - 1);
+        ArrayList<Point> validPoints = new ArrayList<Point>();
+
+        // Right Point
+        if (potRightPoint.getX() < grid_size_x) {            
             // Check if potPathX1 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-            if (getValueAt(potPathX1) == 1 || getValueAt(potPathX1) == 2 || getValueAt(potPathX1) == 3 ) 
+            if (getValueAt(potRightPoint) == 1 || getValueAt(potRightPoint) == 2 || getValueAt(potRightPoint) == 3 ) 
             {
-                connectedPaths.add(potPathX1);
+                connectedPaths += 1;
             }
 
-            addToPotentialPoints(potPathX1);
+            validPoints.add(potRightPoint);
         }
 
-        if (chosenPoint.getX() - 1 >= 0 && chosenPoint.getX() - 1 < grid_size_x) {
-            int xPosition = chosenPoint.getX() + 1;
-            Point potPathX2 = new Point(xPosition, chosenPoint.getY());
+        // Left Point
+        if (potLeftPoint.getX() >= 0) {
 
             // Check if potPathX2 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-            if (getValueAt(potPathX2) == 1 || getValueAt(potPathX2) == 2 || getValueAt(potPathX2) == 3 ) 
+            if (getValueAt(potLeftPoint) == 1 || getValueAt(potLeftPoint) == 2 || getValueAt(potLeftPoint) == 3 ) 
             {
-                connectedPaths.add(potPathX2);
+                connectedPaths += 1;
             }
             
-            addToPotentialPoints(potPathX2);
+            validPoints.add(potLeftPoint);
+
         }
 
-        if (chosenPoint.getY() + 1 >= 0 && chosenPoint.getY() + 1 < grid_size_y) {
-            int yPosition = chosenPoint.getY() + 1;
-            Point potPathY1 = new Point(chosenPoint.getX(), yPosition);
+        // Bottom Point
+        if (potBottomPoint.getY() < grid_size_y) {
 
             // Check if potPathY1 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-            if (getValueAt(potPathY1) == 1 || getValueAt(potPathY1) == 2 || getValueAt(potPathY1) == 3) 
+            if (getValueAt(potBottomPoint) == 1 || getValueAt(potBottomPoint) == 2 || getValueAt(potBottomPoint) == 3) 
             {
-                connectedPaths.add(potPathY1);
+                connectedPaths += 1;
             }
             
-            addToPotentialPoints(potPathY1);
+            validPoints.add(potBottomPoint);
+
         }
 
-        if (chosenPoint.getY() - 1 >= 0 && chosenPoint.getY() - 1 < grid_size_y) {
-            int yPosition = chosenPoint.getY() + 1;
-            Point potPathY2 = new Point(chosenPoint.getX(), yPosition);
+        // Top Point
+        if (potTopPoint.getY() >= 0) {
 
             // Check if potPathY2 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-            if (getValueAt(potPathY2) == 1 || getValueAt(potPathY2) == 2 || getValueAt(potPathY2) == 3) 
+            if (getValueAt(potTopPoint) == 1 || getValueAt(potTopPoint) == 2 || getValueAt(potTopPoint) == 3) 
             {
-                connectedPaths.add(potPathY2);
+                connectedPaths += 1;
             }
+
+            validPoints.add(potTopPoint);
             
-            addToPotentialPoints(potPathY2);
         }
 
-        if (connectedPaths.size() >= 2) {
+        if (connectedPaths >= 2) {
             setMatrix(chosenPoint, 0);          // Set the chosenPoint to a wall because it was connected to 2+ paths
             addToVisual(chosenPoint, 0);
         } else {
             setMatrix(chosenPoint, 1);          // Set the chosenPoint to a path
             addToVisual(chosenPoint, 1);
+            
+            validPoints.forEach((x) -> {
+                addToPotentialPoints(x);
+            });
         }
 
         return visualPathArray;
@@ -154,7 +160,7 @@ public class MazeGenerator {
 
     private void addToPotentialPoints(Point point) {
         // Add to Potential Points List if the block at this point is a wall.
-        if (mazeMatrix.get(point.getX()).get(point.getY()) == 0) {
+        if (getValueAt(point) == 0) {
             potentialPoints.add(point);
             setMatrix(point, 4);
             addToVisual(point, 4);

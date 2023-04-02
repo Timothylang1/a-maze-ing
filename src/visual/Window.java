@@ -92,6 +92,7 @@ class Window {
             sound.start(); // Starts lit soundtrack
             generating_maze = true;
             fading = false;
+            generateGrid();
         });
 
         // Add all to canvas
@@ -136,14 +137,15 @@ class Window {
     }
 
     /*
-     * Checks if a string can be converted to an int, otherwise return 1.
+     * Checks if a string can be converted to an int, otherwise return 2.
      */
     private int checkInt(String potential_int) {
         try {
-            return Integer.parseInt(potential_int);
+            int size = Integer.parseInt(potential_int);
+            return size < 2 ? 2 : size;
         }
         catch (Exception e) {
-            return 1;
+            return 2;
         }
     }
 
