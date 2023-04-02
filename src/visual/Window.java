@@ -47,12 +47,7 @@ class Window {
                     fading = true;
                 }
                 else {
-                    for (int instruction = 0; instruction < incoming_updates.size(); instruction += 3) {
-                        int x_coor = incoming_updates.get(instruction);
-                        int y_coor = incoming_updates.get(instruction + 1);
-                        int color = incoming_updates.get(instruction + 2);
-                        blocks.get(x_coor).get(y_coor).setFill(color);
-                    }
+                    updateVisualGrid(incoming_updates);
                 }
             }
 
@@ -137,7 +132,7 @@ class Window {
             blocks.add(x_column);
         }
         // Create grid for mazeGenerator
-        generator.setMazeSize(grid_size_x, grid_size_y);
+        updateVisualGrid(generator.setMazeSize(grid_size_x, grid_size_y));
     }
 
     /*
@@ -149,6 +144,18 @@ class Window {
         }
         catch (Exception e) {
             return 1;
+        }
+    }
+
+    /*
+     * Takes in all incoming updates and process them so that they get updated on the grid visually.
+     */
+    private void updateVisualGrid(ArrayList<Integer> incoming_updates) {
+        for (int instruction = 0; instruction < incoming_updates.size(); instruction += 3) {
+            int x_coor = incoming_updates.get(instruction);
+            int y_coor = incoming_updates.get(instruction + 1);
+            int color = incoming_updates.get(instruction + 2);
+            blocks.get(x_coor).get(y_coor).setFill(color);
         }
     }
 
