@@ -1,6 +1,10 @@
 package maze;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+
+import edu.macalester.graphics.Point;
 
 public class Testing {
     ArrayList<ArrayList<Integer>> mazeMatrix;
@@ -23,9 +27,16 @@ public class Testing {
             }
         }
         
-        System.out.println(test.mazeMatrix);
-        test.mazeMatrix.get(0).set(0, 1);
-        System.out.println(test.mazeMatrix);
+        // System.out.println(test.mazeMatrix);
+        // test.mazeMatrix.get(0).set(0, 1);
+        // System.out.println(test.mazeMatrix);
+
+        Deque<Point> pointStack = new ArrayDeque<Point>();
+        Point point = new Point(0, 0);
+        pointStack.push(point);
+        point = new Point(15, 0);
+        pointStack.push(point);
+        System.out.println(pointStack);
     }
         
 }

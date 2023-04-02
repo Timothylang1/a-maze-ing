@@ -40,6 +40,7 @@ class Window {
         canvas.animate(() -> {
             if (generating_maze) {
                 ArrayList<Integer> incoming_updates = generator.update();
+                // canvas.pause(400);
                 // if the list of updates is empty, then we have finished generating the maze
                 if (incoming_updates.isEmpty()) {
                     generating_maze = false;
