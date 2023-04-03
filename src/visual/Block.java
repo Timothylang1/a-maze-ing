@@ -10,9 +10,9 @@ public class Block extends Rectangle {
     public static final Map<Integer, Color> colorCode = Map.of(
         0, new Color(0, 0, 0), // Wall
         1, new Color(255, 255, 255), // Path
-        2, new Color(255, 0, 0), // Start
+        2, new Color(148, 0, 211), // Start
         3, new Color(0, 255, 0), // End
-        4, new Color(255, 165, 0), // Potential Path
+        4, new Color(255, 0, 0), // Potential Path
         5, new Color(0, 0, 255) // Solution Path
     );
 

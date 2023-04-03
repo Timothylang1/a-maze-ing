@@ -1,5 +1,6 @@
 package visual;
 import java.util.ArrayList;
+import java.awt.Color;
 
 import edu.macalester.graphics.*;
 import edu.macalester.graphics.ui.*;
@@ -117,6 +118,9 @@ class Window {
         canvas.add(x_label);
         canvas.add(y_label);
         canvas.add(generate_maze);
+
+        // Setup canvas
+        canvas.setBackground(new Color(200, 200, 200));
     }
 
     /*
