@@ -34,21 +34,36 @@ class Window {
     private Button generate_maze = new Button("Generate Maze");
     private final CanvasWindow canvas = new CanvasWindow("a-maze-ing", CANVAS_WIDTH, CANVAS_HEIGHT);
 
+    // Pacing variables
+    private final int FRAMES_PER_SECOND = 60;
+    private final int TOTAL_SECONDS_TO_SOLVE_MAZE = 5;
+    private final double UPDATE_CALLS_TO_GRID_SIZE_RATIO = 1.2; // Calculated ratio (from testing file in visual) that determines how many times update is needed to be called based on a gridsize
+    private double updates_per_frame;
+    private int current_update_iteration;
+    private double current_update_checkpoint;
+
     public Window() {
         setupUI();
         generateGrid();
         canvas.animate(() -> {
             if (generating_maze) {
-                ArrayList<Integer> incoming_updates = generator.update();
-                // canvas.pause(400);
-                // if the list of updates is empty, then we have finished generating the maze
-                if (incoming_updates.isEmpty()) {
-                    generating_maze = false;
-                    fading = true;
+                // While loop will call updates as many times as nessecary to ensure that we are on track to finishing completing the maze in TOTAL_SECONDS_TO_SOLVE_MAZE amount of time
+                while (updates_per_frame * current_update_checkpoint > current_update_iteration) {
+                    // Call update
+                    ArrayList<Integer> incoming_updates = generator.update();
+                    // If the list of updates is empty, then we have finished generating the maze
+                    if (incoming_updates.isEmpty()) {
+                        generating_maze = false;
+                        fading = true;
+                    }
+                    else {
+                        // Update grid to match visually
+                        updateVisualGrid(incoming_updates);
+                    }
+                    // Update tracker for pacing
+                    current_update_iteration++;
                 }
-                else {
-                    updateVisualGrid(incoming_updates);
-                }
+                current_update_checkpoint += 1;
             }
 
             // Check to see if we should fade the sound for an outro
@@ -93,6 +108,7 @@ class Window {
             generating_maze = true;
             fading = false;
             generateGrid();
+            updates_per_second();
         });
 
         // Add all to canvas
@@ -159,6 +175,21 @@ class Window {
             int color = incoming_updates.get(instruction + 2);
             blocks.get(x_coor).get(y_coor).setFill(color);
         }
+    }
+
+    /*
+     * Sets a pace for calling updates per frame so that it doesn't take forever to solve the maze
+     */
+    private void updates_per_second() {
+        // Calculate the total number of updates needed based on gridsize
+        double total_updates = UPDATE_CALLS_TO_GRID_SIZE_RATIO * grid_size_x * grid_size_y;
+        
+        // Number of updates per frame
+        updates_per_frame = total_updates / (FRAMES_PER_SECOND * TOTAL_SECONDS_TO_SOLVE_MAZE);
+
+        // Reset trackers back to 0
+        current_update_iteration = 0;
+        current_update_checkpoint = 0;
     }
 
 
