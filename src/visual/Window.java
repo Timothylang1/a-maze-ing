@@ -1,5 +1,6 @@
 package visual;
 import java.util.ArrayList;
+import java.util.Set;
 import java.awt.Color;
 
 import edu.macalester.graphics.*;
@@ -15,7 +16,7 @@ class Window {
     private final int CANVAS_WIDTH = 900;
     private final int CANVAS_HEIGHT = 700;
     private final int GRID_SIZE = CANVAS_HEIGHT;
-    private final int GRID_SIDELENGTH_CAP = 200; // Maximum gridsize we allow, because anything bigger lags the animation too much
+    private final int GRID_SIDELENGTH_CAP = 180; // Maximum gridsize we allow, because anything bigger lags the animation too much
     private int grid_size_x = 20;
     private int grid_size_y = 20;
 
@@ -120,6 +121,25 @@ class Window {
 
         // Setup canvas
         canvas.setBackground(new Color(200, 200, 200));
+
+        // Setup legend
+        legend();
+    }
+
+    /*
+     * Sets up legend
+     */
+    private void legend() {
+        int colorCodeSize = Block.colorCode.keySet().size();
+        for (int i = 0; i < colorCodeSize; i++) {
+            Rectangle rect = new Rectangle(730, 500 + i * 30, 25, 25);
+            rect.setStrokeColor(Block.colorCode.get(i));
+            rect.setFillColor(Block.colorCode.get(i));
+            GraphicsText text = new GraphicsText(Block.colorWord.get(i), 760, 520 + i * 30);
+
+            canvas.add(rect);
+            canvas.add(text);
+        }
     }
 
     /*
