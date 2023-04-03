@@ -15,6 +15,7 @@ class Window {
     private final int CANVAS_WIDTH = 900;
     private final int CANVAS_HEIGHT = 700;
     private final int GRID_SIZE = CANVAS_HEIGHT;
+    private final int GRID_SIDELENGTH_CAP = 200; // Maximum gridsize we allow, because anything bigger lags the animation too much
     private int grid_size_x = 20;
     private int grid_size_y = 20;
 
@@ -32,6 +33,7 @@ class Window {
     private GraphicsText y_label = new GraphicsText();
     private TextField grid_x = new TextField();
     private TextField grid_y = new TextField();
+    private GraphicsText actual_grid_size = new GraphicsText();
     private Button generate_maze = new Button("Generate Maze");
     private final CanvasWindow canvas = new CanvasWindow("a-maze-ing", CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -79,42 +81,39 @@ class Window {
      */
     private void setupUI() {
         // Set all values and text fields
-        grid_x.setText(Integer.toString(grid_size_x));
-        grid_y.setText(Integer.toString(grid_size_y));
         x_label.setText("Width: ");
         y_label.setText("Height: ");
+        grid_x.setText(Integer.toString(grid_size_x));
+        grid_y.setText(Integer.toString(grid_size_y));
+        actual_grid_size.setText("Grid size: " + Integer.toString(grid_size_x) + "x" + Integer.toString(grid_size_y));
+        actual_grid_size.setFontSize(15);
+        actual_grid_size.setFillColor(new Color(255, 20, 20));
 
-        // Set locations + scale
-        grid_x.setCenter(810, 25);
-        grid_y.setCenter(810, 50);
+        // Set locations
         x_label.setCenter(730, 25);
         y_label.setCenter(730, 50);
-        generate_maze.setCenter(800, 75);
+        grid_x.setCenter(810, 25);
+        grid_y.setCenter(810, 50);
+        actual_grid_size.setCenter(785, 75);
+        generate_maze.setCenter(800, 100);
 
         // Setup commands
         grid_x.onChange(string -> {
             grid_size_x = checkInt(string);
-            generating_maze = false;
-            fading = true;
-            generateGrid();
+            createGrid();
         });
         grid_y.onChange(string -> {
             grid_size_y = checkInt(string);
-            generating_maze = false;
-            fading = true;
-            generateGrid();
+            createGrid();
         });
         generate_maze.onClick(() -> {
-            sound.start(); // Starts lit soundtrack
-            generating_maze = true;
-            fading = false;
-            generateGrid();
-            updates_per_second();
+            startMaze();
         });
 
         // Add all to canvas
         canvas.add(grid_x);
         canvas.add(grid_y);
+        canvas.add(actual_grid_size);
         canvas.add(x_label);
         canvas.add(y_label);
         canvas.add(generate_maze);
@@ -157,12 +156,42 @@ class Window {
     }
 
     /*
-     * Checks if a string can be converted to an int, otherwise return 2.
+     * Resets color of all rectangles instead of deleting all rectangles (more efficient method than generating an entirely
+     * new grid every time we click generateGrid). Also starts soundtrack and sets counters to continue updating grid.
+     */
+    private void startMaze() {
+        sound.start(); // Starts lit soundtrack
+        generating_maze = true;
+        fading = false;
+        updates_per_second();
+        blocks.forEach(column -> {
+            column.forEach(block -> {
+                block.setFill(0); // Reset all blocks back to walls
+            });
+        });
+        updateVisualGrid(generator.setMazeSize(grid_size_x, grid_size_y)); // Add in start and ending block
+    }
+
+    /*
+     * Creates grid and updates counters accordingly
+     */
+    private void createGrid() {
+        actual_grid_size.setText("Grid size: " + Integer.toString(grid_size_x) + "x" + Integer.toString(grid_size_y));
+        generating_maze = false;
+        fading = true;
+        generateGrid();
+    }
+
+    /*
+     * Checks to see if its possible to convert to an int, and if no returns 2.
+     * Before returning original value, check to see if it's within bounds (0 and GRIDCAP / 2)
      */
     private int checkInt(String potential_int) {
         try {
             int size = Integer.parseInt(potential_int);
-            return size < 2 ? 2 : size;
+            if (size < 2) return 2;
+            if (size > GRID_SIDELENGTH_CAP) return GRID_SIDELENGTH_CAP;
+            return size;
         }
         catch (Exception e) {
             return 2;
