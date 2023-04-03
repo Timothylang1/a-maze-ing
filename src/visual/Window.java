@@ -1,6 +1,5 @@
 package visual;
 import java.util.ArrayList;
-import java.util.Set;
 import java.awt.Color;
 
 import edu.macalester.graphics.*;
