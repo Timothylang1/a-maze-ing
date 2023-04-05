@@ -35,7 +35,8 @@ class Window {
     private TextField grid_y = new TextField();
     private GraphicsText actual_grid_size = new GraphicsText();
     private Button generate_maze = new Button("Generate Maze");
-    private final CanvasWindow canvas = new CanvasWindow("a-maze-ing", CANVAS_WIDTH, CANVAS_HEIGHT);
+    private Button solve_maze_BFS = new Button("Solve Maze BFS");
+    private CanvasWindow canvas = new CanvasWindow("a-maze-ing", CANVAS_WIDTH, CANVAS_HEIGHT);
 
     // Pacing variables
     private final int FRAMES_PER_SECOND = 60;
@@ -96,6 +97,7 @@ class Window {
         grid_y.setCenter(810, 50);
         actual_grid_size.setCenter(785, 75);
         generate_maze.setCenter(800, 100);
+        solve_maze_BFS.setCenter(800, 125);
 
         // Setup commands
         grid_x.onChange(string -> {
@@ -108,6 +110,9 @@ class Window {
         });
         generate_maze.onClick(() -> {
             startMaze();
+        });
+        solve_maze_BFS.onClick(() -> {
+            solve();
         });
 
         // Add all to canvas
@@ -123,6 +128,13 @@ class Window {
 
         // Setup legend
         legend();
+    }
+
+    /*
+     * Calls solution class to solve the maze
+     */
+    private void solve() {
+        System.out.println("This works");
     }
 
     /*
