@@ -122,6 +122,7 @@ class Window {
         canvas.add(x_label);
         canvas.add(y_label);
         canvas.add(generate_maze);
+        canvas.add(solve_maze_BFS);
 
         // Setup canvas
         canvas.setBackground(new Color(200, 200, 200));
