@@ -16,8 +16,8 @@ class Window {
     private final int CANVAS_HEIGHT = 700;
     private final int GRID_SIZE = CANVAS_HEIGHT;
     private final int GRID_SIDELENGTH_CAP = 180; // Maximum gridsize we allow, because anything bigger lags the animation too much
-    private int grid_size_x = 20;
-    private int grid_size_y = 20;
+    private int grid_size_x = 21;
+    private int grid_size_y = 21;
 
     // Placeholders
     private ArrayList<ArrayList<Block>> blocks = new ArrayList<>();

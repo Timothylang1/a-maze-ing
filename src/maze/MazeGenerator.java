@@ -63,12 +63,23 @@ public class MazeGenerator {
 
         // Potential paths are 1 block away from a current block.
         // From the start, I can't go negative direction.
-
-        // From (0, 0), my potential paths are (1, 0) or (0, 1), which means I'm moving in only one axis.
-        int connectedPaths = 0;
     
         // Remove the chosenPoint from the potentialPaths list
         if (potentialPoints.size() == 0) {
+            Point endPoint = new Point(grid_size_x - 1, grid_size_y - 1);
+            Point endPointLeft = new Point(endPoint.getX() - 1, endPoint.getY());
+            Point endPointUp = new Point(endPoint.getX(), endPoint.getY() - 1);
+
+            if (getValueAt(endPointLeft) == 0 && getValueAt(endPointUp) == 0) {
+                ArrayList<Point> endings = new ArrayList<Point>();
+                endings.add(endPointLeft);
+                endings.add(endPointUp);
+    
+                Point chosenEnding = endings.get(randomGenerator.nextInt(endings.size()));
+                setMatrix(chosenEnding, 1);
+                addToVisual(chosenEnding, 1);
+            }
+
             return visualPathArray;
         }
         Point chosenPoint = potentialPoints.remove(randomGenerator.nextInt(potentialPoints.size()));       // random.nextInt()'s bound is exclusive        
@@ -77,17 +88,18 @@ public class MazeGenerator {
         Point potLeftPoint = new Point(chosenPoint.getX() - 1, chosenPoint.getY());
         Point potBottomPoint = new Point(chosenPoint.getX(), chosenPoint.getY() + 1);
         Point potTopPoint = new Point(chosenPoint.getX(), chosenPoint.getY() - 1);
-        ArrayList<Point> validPoints = new ArrayList<Point>();
+        ArrayList<Point> neighborPoints = new ArrayList<Point>();
+
+
+
 
         // Right Point
         if (potRightPoint.getX() < grid_size_x) {            
             // Check if potPathX1 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
             if (getValueAt(potRightPoint) == 1 || getValueAt(potRightPoint) == 2 || getValueAt(potRightPoint) == 3 ) 
             {
-                connectedPaths += 1;
+                neighborPoints.add(potRightPoint);
             }
-
-            validPoints.add(potRightPoint);
         }
 
         // Left Point
@@ -96,11 +108,8 @@ public class MazeGenerator {
             // Check if potPathX2 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
             if (getValueAt(potLeftPoint) == 1 || getValueAt(potLeftPoint) == 2 || getValueAt(potLeftPoint) == 3 ) 
             {
-                connectedPaths += 1;
+                neighborPoints.add(potLeftPoint);
             }
-            
-            validPoints.add(potLeftPoint);
-
         }
 
         // Bottom Point
@@ -109,11 +118,8 @@ public class MazeGenerator {
             // Check if potPathY1 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
             if (getValueAt(potBottomPoint) == 1 || getValueAt(potBottomPoint) == 2 || getValueAt(potBottomPoint) == 3) 
             {
-                connectedPaths += 1;
+                neighborPoints.add(potBottomPoint);
             }
-            
-            validPoints.add(potBottomPoint);
-
         }
 
         // Top Point
@@ -122,23 +128,66 @@ public class MazeGenerator {
             // Check if potPathY2 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
             if (getValueAt(potTopPoint) == 1 || getValueAt(potTopPoint) == 2 || getValueAt(potTopPoint) == 3) 
             {
-                connectedPaths += 1;
-            }
-
-            validPoints.add(potTopPoint);
-            
+                neighborPoints.add(potTopPoint);
+            }            
         }
 
-        if (connectedPaths >= 2) {
+        if (neighborPoints.size() == 2) {
             setMatrix(chosenPoint, 0);          // Set the chosenPoint to a wall because it was connected to 2+ paths
             addToVisual(chosenPoint, 0);
         } else {
             setMatrix(chosenPoint, 1);          // Set the chosenPoint to a path
             addToVisual(chosenPoint, 1);
-            
-            validPoints.forEach((x) -> {
-                addToPotentialPoints(x);
-            });
+
+            // Calculating where the next path will be placed based on previous path's direction.
+            int nextPointX = 2*(chosenPoint.getX()) - neighborPoints.get(0).getX();
+            int nextPointY = 2*(chosenPoint.getY()) - neighborPoints.get(0).getY();
+            Point nextPoint = new Point(nextPointX, nextPointY);
+
+            System.out.println("This is neighborPoints.get(0).getX() " + neighborPoints.get(0).getX());
+            System.out.println("This is neighborPoints.get(0).getY() " + neighborPoints.get(0).getY());
+
+            System.out.println("This is nextPointX " + nextPointX);
+            System.out.println("This is nextPointY " + nextPointY);
+            System.out.println("This is chosenPointX " + chosenPoint.getX());
+            System.out.println("This is chosenPointY " + chosenPoint.getY());
+
+
+            setMatrix(nextPoint, 1);
+            addToVisual(nextPoint, 1);
+
+            potRightPoint = new Point(nextPoint.getX() + 1, nextPoint.getY());
+            potLeftPoint = new Point(nextPoint.getX() - 1, nextPoint.getY());
+            potBottomPoint = new Point(nextPoint.getX(), nextPoint.getY() + 1);
+            potTopPoint = new Point(nextPoint.getX(), nextPoint.getY() - 1);
+
+
+            // Right Point
+            if (potRightPoint.getX() < grid_size_x) {            
+                // Check if potPathX1 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
+                addToPotentialPoints(potRightPoint);
+            }
+
+            // Left Point
+            if (potLeftPoint.getX() >= 0) {
+
+                // Check if potPathX2 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
+                addToPotentialPoints(potLeftPoint);
+            }
+
+            // Bottom Point
+            if (potBottomPoint.getY() < grid_size_y) {
+
+                // Check if potPathY1 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
+                addToPotentialPoints(potBottomPoint);
+            }
+
+            // Top Point
+            if (potTopPoint.getY() >= 0) {
+
+                // Check if potPathY2 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
+                addToPotentialPoints(potTopPoint);
+            }
         }
 
         return visualPathArray;
