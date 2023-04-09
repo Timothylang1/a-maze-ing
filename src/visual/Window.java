@@ -41,7 +41,7 @@ class Window {
     // Pacing variables
     private final int FRAMES_PER_SECOND = 60;
     private final int TOTAL_SECONDS_TO_SOLVE_MAZE = 5;
-    private final double UPDATE_CALLS_TO_GRID_SIZE_RATIO = 1.2; // Calculated ratio (from testing file in visual) that determines how many times update is needed to be called based on a gridsize
+    private final double UPDATE_CALLS_TO_GRID_SIZE_RATIO = 0.5; // Calculated ratio (from testing file in visual) that determines how many times update is needed to be called based on a gridsize
     private double updates_per_frame;
     private int current_update_iteration;
     private double current_update_checkpoint;
@@ -226,7 +226,7 @@ class Window {
             return size;
         }
         catch (Exception e) {
-            return 2;
+            return 3;
         }
     }
 
