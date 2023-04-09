@@ -15,7 +15,7 @@ class Window {
     private final int CANVAS_WIDTH = 900;
     private final int CANVAS_HEIGHT = 700;
     private final int GRID_SIZE = CANVAS_HEIGHT;
-    private final int GRID_SIDELENGTH_CAP = 180; // Maximum gridsize we allow, because anything bigger lags the animation too much
+    private final int GRID_SIDELENGTH_CAP = 181; // Maximum gridsize we allow, because anything bigger lags the animation too much
     private int grid_size_x = 21;
     private int grid_size_y = 21;
 
@@ -84,8 +84,8 @@ class Window {
         // Set all values and text fields
         x_label.setText("Width: ");
         y_label.setText("Height: ");
-        grid_x.setText(Integer.toString(grid_size_x));
-        grid_y.setText(Integer.toString(grid_size_y));
+        grid_x.setText(Integer.toString((grid_size_x - 1) / 2));
+        grid_y.setText(Integer.toString((grid_size_y - 1) / 2));
         actual_grid_size.setText("Grid size: " + Integer.toString(grid_size_x) + "x" + Integer.toString(grid_size_y));
         actual_grid_size.setFontSize(15);
         actual_grid_size.setFillColor(new Color(255, 20, 20));
@@ -220,8 +220,8 @@ class Window {
      */
     private int checkInt(String potential_int) {
         try {
-            int size = Integer.parseInt(potential_int);
-            if (size < 2) return 2;
+            int size = 2*Integer.parseInt(potential_int) + 1;
+            if (size < 3) return 3;
             if (size > GRID_SIDELENGTH_CAP) return GRID_SIDELENGTH_CAP;
             return size;
         }

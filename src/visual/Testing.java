@@ -3,7 +3,7 @@ package visual;
 import maze.MazeGenerator;
 
 /*
- * We wanted to check the ratio between the grid size and how many updates were required to complete the maze. That way, we could come up with a more accurate estimate of how many times to call update to get a rough runtime when showcasing the code
+ * We wanted to check the ratio between the grid size and how many updates were required to complete the maze. That way, we could come up with a more accurate estimate of how many times to call update per frame to get a rough runtime when showcasing the code
  */
 public class Testing {
     private static final int NUMBER_OF_TESTS = 100;
