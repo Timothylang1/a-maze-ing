@@ -57,9 +57,6 @@ public class MazeGenerator {
         // The third value is a Color Code.
         
         visualPathArray.clear();
-
-        // Potential paths are 1 block away from a current block.
-        // From the start, I can't go negative direction.
     
         // Remove the chosenPoint from the potentialPaths list
         if (potentialPoints.size() == 0) {
@@ -79,6 +76,8 @@ public class MazeGenerator {
 
             return visualPathArray;
         }
+
+        // Potential paths are 1 block away from a current block, should be in-bounds, and are walls.
         Point chosenPoint = potentialPoints.remove(randomGenerator.nextInt(potentialPoints.size()));       // random.nextInt()'s bound is exclusive        
 
         Point potRightPoint = new Point(chosenPoint.getX() + 1, chosenPoint.getY());
@@ -87,16 +86,9 @@ public class MazeGenerator {
         Point potTopPoint = new Point(chosenPoint.getX(), chosenPoint.getY() - 1);
         ArrayList<Point> neighborPoints = new ArrayList<Point>();
 
-        // Right Point
         addToNeighborPoints(potRightPoint, neighborPoints);
-        
-        // Left Point
         addToNeighborPoints(potLeftPoint, neighborPoints);
-
-        // Bottom Point
         addToNeighborPoints(potBottomPoint, neighborPoints);
-
-        // Top Point
         addToNeighborPoints(potTopPoint, neighborPoints);
 
         if (neighborPoints.size() == 2) {
@@ -111,7 +103,6 @@ public class MazeGenerator {
             int nextPointY = 2*(chosenPoint.getY()) - neighborPoints.get(0).getY();
             Point nextPoint = new Point(nextPointX, nextPointY);
 
-
             setMatrix(nextPoint, 1);
             addToVisual(nextPoint, 1);
 
@@ -120,17 +111,9 @@ public class MazeGenerator {
             potBottomPoint = new Point(nextPoint.getX(), nextPoint.getY() + 1);
             potTopPoint = new Point(nextPoint.getX(), nextPoint.getY() - 1);
 
-
-            // Right Point
             addToPotentialPoints(potRightPoint);
-            
-            // Left Point
             addToPotentialPoints(potLeftPoint);
-
-            // Bottom Point
             addToPotentialPoints(potBottomPoint);
-
-            // Top Point
             addToPotentialPoints(potTopPoint);
         }
 
@@ -148,8 +131,6 @@ public class MazeGenerator {
         // Add this potential point as a certain type of block in the mazeMatrix
         mazeMatrix.get(point.getX()).set(point.getY(), colorCode);
     }
-
-    
 
     private void addToPotentialPoints(Point point) {
         // Add to Potential Points List if the block is in bounds AND if at this point is a wall.
