@@ -42,8 +42,6 @@ public class MazeGenerator {
         addToPotentialPoints(new Point(1, 0));
         addToPotentialPoints(new Point(0, 1));
 
-
-
         // Update Ending Block 
         setMatrix(new Point(grid_size_x - 1, grid_size_y - 1), 3);
         addToVisual(new Point(grid_size_x - 1, grid_size_y - 1), 3);
