@@ -17,15 +17,17 @@ class Window {
     private final int CANVAS_HEIGHT = 700;
     private final int GRID_SIZE = CANVAS_HEIGHT;
     private final int GRID_SIDELENGTH_CAP = 181; // Maximum gridsize we allow, because anything bigger lags the animation too much
-    private int grid_size_x = 5; // 21
+    private int grid_size_x = 5;
     private int grid_size_y = 5;
 
     // Placeholders
     private ArrayList<ArrayList<Block>> blocks = new ArrayList<>();
     private boolean generating_maze = false; // Tracker to determine if we should be generating a maze or not
+    private boolean solving_maze = false;
 
     // Other class creations
     private MazeGenerator generator = new MazeGenerator();
+    private Solution solution = new Solution();
     private Sound sound = new Sound();
     private boolean fading = false;
 
@@ -69,6 +71,20 @@ class Window {
                     current_update_iteration++;
                 }
                 current_update_checkpoint += 1;
+            }
+
+            if (solving_maze) {
+                // Call update
+                ArrayList<Integer> incoming_updates = solution.update();
+                // If the list of updates is empty, then we have finished generating the maze
+                if (incoming_updates.isEmpty()) {
+                    solving_maze = false;
+                    fading = true;
+                }
+                else {
+                    // Update grid to match visually
+                    updateVisualGrid(incoming_updates);
+                }
             }
 
             // Check to see if we should fade the sound for an outro
@@ -136,8 +152,9 @@ class Window {
      * Calls solution class to solve the maze
      */
     private void solve() {
-        System.out.println("This works");
-        System.out.println(new Solution().update());
+        sound.start(); // Starts lit soundtrack
+        solving_maze = true;
+        fading = false;
     }
 
     /*
@@ -222,7 +239,7 @@ class Window {
      */
     private int checkInt(String potential_int) {
         try {
-            int size = 2*Integer.parseInt(potential_int) + 1;
+            int size = 2 * Integer.parseInt(potential_int) + 1;
             if (size < 3) return 3;
             if (size > GRID_SIDELENGTH_CAP) return GRID_SIDELENGTH_CAP;
             return size;
