@@ -36,6 +36,7 @@ public class MazeGenerator {
         mazeMatrix.clear();
         visualPathArray.clear();
         potentialPoints.clear();
+        neighborPoints.clear();
         
         grid_size_x = x;
         grid_size_y = y;
