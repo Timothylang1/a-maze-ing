@@ -124,7 +124,6 @@ public class MazeGenerator {
         return visualPathArray;
     }
 
-
     /**
      * Set the colorCode for the current block at this point and add it to the visual
      * 
