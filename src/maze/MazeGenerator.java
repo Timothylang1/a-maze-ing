@@ -59,7 +59,6 @@ public class MazeGenerator {
         // The third value is a Color Code.
         
         visualPathArray.clear();
-        // System.out.println(mazeMatrix);
 
         // Potential paths are 1 block away from a current block.
         // From the start, I can't go negative direction.
@@ -90,47 +89,17 @@ public class MazeGenerator {
         Point potTopPoint = new Point(chosenPoint.getX(), chosenPoint.getY() - 1);
         ArrayList<Point> neighborPoints = new ArrayList<Point>();
 
-
-
-
         // Right Point
-        if (potRightPoint.getX() < grid_size_x) {            
-            // Check if potPathX1 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-            if (getValueAt(potRightPoint) == 1 || getValueAt(potRightPoint) == 2 || getValueAt(potRightPoint) == 3 ) 
-            {
-                neighborPoints.add(potRightPoint);
-            }
-        }
-
+        addToNeighborPoints(potRightPoint, neighborPoints);
+        
         // Left Point
-        if (potLeftPoint.getX() >= 0) {
-
-            // Check if potPathX2 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-            if (getValueAt(potLeftPoint) == 1 || getValueAt(potLeftPoint) == 2 || getValueAt(potLeftPoint) == 3 ) 
-            {
-                neighborPoints.add(potLeftPoint);
-            }
-        }
+        addToNeighborPoints(potLeftPoint, neighborPoints);
 
         // Bottom Point
-        if (potBottomPoint.getY() < grid_size_y) {
-
-            // Check if potPathY1 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-            if (getValueAt(potBottomPoint) == 1 || getValueAt(potBottomPoint) == 2 || getValueAt(potBottomPoint) == 3) 
-            {
-                neighborPoints.add(potBottomPoint);
-            }
-        }
+        addToNeighborPoints(potBottomPoint, neighborPoints);
 
         // Top Point
-        if (potTopPoint.getY() >= 0) {
-
-            // Check if potPathY2 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-            if (getValueAt(potTopPoint) == 1 || getValueAt(potTopPoint) == 2 || getValueAt(potTopPoint) == 3) 
-            {
-                neighborPoints.add(potTopPoint);
-            }            
-        }
+        addToNeighborPoints(potTopPoint, neighborPoints);
 
         if (neighborPoints.size() == 2) {
             setMatrix(chosenPoint, 0);          // Set the chosenPoint to a wall because it was connected to 2+ paths
@@ -144,14 +113,6 @@ public class MazeGenerator {
             int nextPointY = 2*(chosenPoint.getY()) - neighborPoints.get(0).getY();
             Point nextPoint = new Point(nextPointX, nextPointY);
 
-            System.out.println("This is neighborPoints.get(0).getX() " + neighborPoints.get(0).getX());
-            System.out.println("This is neighborPoints.get(0).getY() " + neighborPoints.get(0).getY());
-
-            System.out.println("This is nextPointX " + nextPointX);
-            System.out.println("This is nextPointY " + nextPointY);
-            System.out.println("This is chosenPointX " + chosenPoint.getX());
-            System.out.println("This is chosenPointY " + chosenPoint.getY());
-
 
             setMatrix(nextPoint, 1);
             addToVisual(nextPoint, 1);
@@ -163,31 +124,16 @@ public class MazeGenerator {
 
 
             // Right Point
-            if (potRightPoint.getX() < grid_size_x) {            
-                // Check if potPathX1 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-                addToPotentialPoints(potRightPoint);
-            }
-
+            addToPotentialPoints(potRightPoint);
+            
             // Left Point
-            if (potLeftPoint.getX() >= 0) {
-
-                // Check if potPathX2 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-                addToPotentialPoints(potLeftPoint);
-            }
+            addToPotentialPoints(potLeftPoint);
 
             // Bottom Point
-            if (potBottomPoint.getY() < grid_size_y) {
-
-                // Check if potPathY1 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-                addToPotentialPoints(potBottomPoint);
-            }
+            addToPotentialPoints(potBottomPoint);
 
             // Top Point
-            if (potTopPoint.getY() >= 0) {
-
-                // Check if potPathY2 is labeled as a path or not. If yes, add it to connectedPaths; If not, don't add to connectedPaths
-                addToPotentialPoints(potTopPoint);
-            }
+            addToPotentialPoints(potTopPoint);
         }
 
         return visualPathArray;
@@ -205,16 +151,38 @@ public class MazeGenerator {
         mazeMatrix.get(point.getX()).set(point.getY(), colorCode);
     }
 
+    
+
     private void addToPotentialPoints(Point point) {
-        // Add to Potential Points List if the block at this point is a wall.
-        if (getValueAt(point) == 0) {
-            potentialPoints.add(point);
-            setMatrix(point, 4);
-            addToVisual(point, 4);
+        // Add to Potential Points List if the block is in bounds AND if at this point is a wall.
+        if (checkBounds(point)) {
+            if (getValueAt(point) == 0) {
+                potentialPoints.add(point);
+                setMatrix(point, 4);
+                addToVisual(point, 4);
+            }    
         }
     }
 
     private int getValueAt(Point point) {
         return mazeMatrix.get(point.getX()).get(point.getY());
+    }
+
+    private void addToNeighborPoints(Point point, ArrayList<Point> neighborPoints) {
+        if (checkBounds(point)){
+            if (getValueAt(point) == 1 || getValueAt(point) == 2 || getValueAt(point) == 3 ) 
+            {
+                neighborPoints.add(point);
+            }    
+        }
+    }
+
+    private boolean checkBounds(Point point) {
+        if ((point.getX() < grid_size_x) && (point.getX() >= 0)) {
+            if ((point.getY() < grid_size_y) && (point.getY() >= 0)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
