@@ -5,6 +5,7 @@ import java.awt.Color;
 import edu.macalester.graphics.*;
 import edu.macalester.graphics.ui.*;
 import maze.MazeGenerator;
+import solution.Solution;
 
 
 /* 
@@ -16,8 +17,8 @@ class Window {
     private final int CANVAS_HEIGHT = 700;
     private final int GRID_SIZE = CANVAS_HEIGHT;
     private final int GRID_SIDELENGTH_CAP = 181; // Maximum gridsize we allow, because anything bigger lags the animation too much
-    private int grid_size_x = 21;
-    private int grid_size_y = 21;
+    private int grid_size_x = 5; // 21
+    private int grid_size_y = 5;
 
     // Placeholders
     private ArrayList<ArrayList<Block>> blocks = new ArrayList<>();
@@ -136,6 +137,7 @@ class Window {
      */
     private void solve() {
         System.out.println("This works");
+        System.out.println(new Solution().update());
     }
 
     /*

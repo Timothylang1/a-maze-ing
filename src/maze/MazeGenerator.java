@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MazeGenerator {
-    ArrayList<ArrayList<Integer>> mazeMatrix;
+    public static ArrayList<ArrayList<Integer>> mazeMatrix;
     int grid_size_x;
     int grid_size_y;
     Random randomGenerator;
