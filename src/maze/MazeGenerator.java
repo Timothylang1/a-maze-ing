@@ -3,26 +3,36 @@ package maze;
 import java.util.ArrayList;
 import java.util.Random;
 
+/*
+ * Sets up the maze grid, generates the maze, and represents 
+ * the maze as an array of an array of integers.
+ */
 public class MazeGenerator {
     public static ArrayList<ArrayList<Integer>> mazeMatrix;
-    int grid_size_x;
-    int grid_size_y;
-    Random randomGenerator;
-    ArrayList<Integer> visualPathArray;
-    ArrayList<Point> potentialPoints;
-
+    private int grid_size_x;
+    private int grid_size_y;
+    private Random randomGenerator;
+    private ArrayList<Integer> visualPathArray;     // An array that carries triplets of integers at a time
+    private ArrayList<Point> potentialPoints;       // Array of points that could be a potential path
+    private ArrayList<Point> neighborPoints;        // Array of neighboring path points for the chosen point
 
     public MazeGenerator() {
         mazeMatrix = new ArrayList<ArrayList<Integer>>();
         randomGenerator = new Random();
         potentialPoints = new ArrayList<Point>();
         visualPathArray = new ArrayList<Integer>();
+        neighborPoints = new ArrayList<Point>();
     }
 
+    /**
+     * Create a matrix of size x and y. All values set to zero at first because everything is a wall.
+     * The matrix will have the coordinate system (x, y)
+     * 
+     * @param x
+     * @param y
+     * @return visualPathArray
+     */
     public ArrayList<Integer> setMazeSize(int x, int y) {
-        // Create a matrix of size x and y. All values set to zero at first because everything is a wall.
-        // The matrix will have the coordinate system (x, y)
-        // Returns the start and end block
         mazeMatrix.clear();
         visualPathArray.clear();
         potentialPoints.clear();
@@ -49,15 +59,19 @@ public class MazeGenerator {
         return visualPathArray;
     }
 
+    /**
+     * Whatever block I'm updating, I should return that block. 
+     * The resulting visualPathArray will contain 3 values:
+     * The first value is an x-value;
+     * The second value is an y-value;
+     * The third value is a Color Code.
+     * 
+     * @return visualPathArray
+     */
     public ArrayList<Integer> update() {
-        // Whatever block I'm updating, I should return that block. 
-        // The resulting return value will contain 3 values:
-        // The first value is an x-value
-        // The second value is an y-value
-        // The third value is a Color Code.
-        
         visualPathArray.clear();
-    
+        neighborPoints.clear();
+        
         // Remove the chosenPoint from the potentialPaths list
         if (potentialPoints.size() == 0) {
             Point endPoint = new Point(grid_size_x - 1, grid_size_y - 1);
@@ -84,12 +98,11 @@ public class MazeGenerator {
         Point potLeftPoint = new Point(chosenPoint.getX() - 1, chosenPoint.getY());
         Point potBottomPoint = new Point(chosenPoint.getX(), chosenPoint.getY() + 1);
         Point potTopPoint = new Point(chosenPoint.getX(), chosenPoint.getY() - 1);
-        ArrayList<Point> neighborPoints = new ArrayList<Point>();
 
-        addToNeighborPoints(potRightPoint, neighborPoints);
-        addToNeighborPoints(potLeftPoint, neighborPoints);
-        addToNeighborPoints(potBottomPoint, neighborPoints);
-        addToNeighborPoints(potTopPoint, neighborPoints);
+        addToNeighborPoints(potRightPoint);
+        addToNeighborPoints(potLeftPoint);
+        addToNeighborPoints(potBottomPoint);
+        addToNeighborPoints(potTopPoint);
 
         if (neighborPoints.size() == 2) {
             setMatrix(chosenPoint, 0);          // Set the chosenPoint to a wall because it was connected to 2+ paths
@@ -120,20 +133,36 @@ public class MazeGenerator {
         return visualPathArray;
     }
 
+
+    /**
+     * Set the colorCode for the current block at this point and add it to the visual
+     * 
+     * @param point
+     * @param colorCode
+     */
     private void addToVisual(Point point, int colorCode) {
-        // Add this point as a certain type of block in the visual
         visualPathArray.add(point.getX());
         visualPathArray.add(point.getY());
         visualPathArray.add(colorCode);
     }
 
+    /**
+     * Set the colorCode for a block at the given point
+     * 
+     * @param point
+     * @param colorCode
+     */
     private void setMatrix(Point point, int colorCode) {
         // Add this potential point as a certain type of block in the mazeMatrix
         mazeMatrix.get(point.getX()).set(point.getY(), colorCode);
     }
 
+    /**
+     * Add to Potential Points List if the block is in bounds AND if at this point is a wall.
+     * 
+     * @param point
+     */
     private void addToPotentialPoints(Point point) {
-        // Add to Potential Points List if the block is in bounds AND if at this point is a wall.
         if (checkBounds(point)) {
             if (getValueAt(point) == 0) {
                 potentialPoints.add(point);
@@ -143,11 +172,23 @@ public class MazeGenerator {
         }
     }
 
+    /**
+     * Get the colorCode for the block at this point.
+     * 
+     * @param point
+     * @return colorCode
+     */
     private int getValueAt(Point point) {
         return mazeMatrix.get(point.getX()).get(point.getY());
     }
 
-    private void addToNeighborPoints(Point point, ArrayList<Point> neighborPoints) {
+    /**
+     * If the given point is in-bounds AND the point is a path, start, or end
+     * then add it as a neighbor to the currently chosen point
+     * 
+     * @param point
+     */
+    private void addToNeighborPoints(Point point) {
         if (checkBounds(point)){
             if (getValueAt(point) == 1 || getValueAt(point) == 2 || getValueAt(point) == 3 ) 
             {
