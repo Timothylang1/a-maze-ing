@@ -61,11 +61,12 @@ public class MazeGenerator {
     }
 
     /**
-     * Whatever block I'm updating, I should return that block. 
-     * The resulting visualPathArray will contain 3 values:
-     * The first value is an x-value;
-     * The second value is an y-value;
-     * The third value is a Color Code.
+     * Travel down a potential path and provides block update for Window class 
+     * 
+     * The resulting visualPathArray will contain triplets:
+     * The first value in the triplet is a x-value;
+     * The second value is the triplet is a y-value;
+     * The third value is the triplet is a Color Code.
      * 
      * @return visualPathArray
      */
@@ -73,7 +74,6 @@ public class MazeGenerator {
         visualPathArray.clear();
         neighborPoints.clear();
         
-        // Remove the chosenPoint from the potentialPaths list
         if (potentialPoints.size() == 0) {
             Point endPoint = new Point(grid_size_x - 1, grid_size_y - 1);
             Point endPointLeft = new Point(endPoint.getX() - 1, endPoint.getY());
@@ -95,15 +95,10 @@ public class MazeGenerator {
         // Potential paths are 1 block away from a current block, should be in-bounds, and are walls.
         Point chosenPoint = potentialPoints.remove(randomGenerator.nextInt(potentialPoints.size()));       // random.nextInt()'s bound is exclusive        
 
-        Point potRightPoint = new Point(chosenPoint.getX() + 1, chosenPoint.getY());
-        Point potLeftPoint = new Point(chosenPoint.getX() - 1, chosenPoint.getY());
-        Point potBottomPoint = new Point(chosenPoint.getX(), chosenPoint.getY() + 1);
-        Point potTopPoint = new Point(chosenPoint.getX(), chosenPoint.getY() - 1);
-
-        addToNeighborPoints(potRightPoint);
-        addToNeighborPoints(potLeftPoint);
-        addToNeighborPoints(potBottomPoint);
-        addToNeighborPoints(potTopPoint);
+        // Find the valid neighborPoints of chosenPoint
+        for (Point p : generateSurroundingPoints(chosenPoint)) {
+            addToNeighborPoints(p);
+        }
 
         if (neighborPoints.size() == 2) {
             setMatrix(chosenPoint, 0);          // Set the chosenPoint to a wall because it was connected to 2+ paths
@@ -120,15 +115,10 @@ public class MazeGenerator {
             setMatrix(nextPoint, 1);
             addToVisual(nextPoint, 1);
 
-            potRightPoint = new Point(nextPoint.getX() + 1, nextPoint.getY());
-            potLeftPoint = new Point(nextPoint.getX() - 1, nextPoint.getY());
-            potBottomPoint = new Point(nextPoint.getX(), nextPoint.getY() + 1);
-            potTopPoint = new Point(nextPoint.getX(), nextPoint.getY() - 1);
-
-            addToPotentialPoints(potRightPoint);
-            addToPotentialPoints(potLeftPoint);
-            addToPotentialPoints(potBottomPoint);
-            addToPotentialPoints(potTopPoint);
+            // Find the neighbor points for nextPoints
+            for (Point p : generateSurroundingPoints(nextPoint)) {
+                addToPotentialPoints(p);
+            }
         }
 
         return visualPathArray;
@@ -198,6 +188,12 @@ public class MazeGenerator {
         }
     }
 
+    /**
+     * Checks to see whether a point is within the bounds of the grid
+     * 
+     * @param point
+     * @return
+     */
     private boolean checkBounds(Point point) {
         if ((point.getX() < grid_size_x) && (point.getX() >= 0)) {
             if ((point.getY() < grid_size_y) && (point.getY() >= 0)) {
@@ -205,5 +201,30 @@ public class MazeGenerator {
             }
         }
         return false;
+    }
+
+    /**
+     * Generates 4 points immediately surrounding a given point:
+     * the right point,
+     * the left point,
+     * the bottom point,
+     * and the top point 
+     * 
+     * @param point
+     * @return
+     */
+    private ArrayList<Point> generateSurroundingPoints(Point point) {
+        Point surRightPoint = new Point(point.getX() + 1, point.getY());
+        Point surLeftPoint = new Point(point.getX() - 1, point.getY());
+        Point surBottomPoint = new Point(point.getX(), point.getY() + 1);
+        Point surTopPoint = new Point(point.getX(), point.getY() - 1);
+
+        ArrayList<Point> surroundingPoints = new ArrayList<Point>();
+        surroundingPoints.add(surRightPoint);
+        surroundingPoints.add(surLeftPoint);
+        surroundingPoints.add(surBottomPoint);
+        surroundingPoints.add(surTopPoint);
+
+        return surroundingPoints;
     }
 }
