@@ -75,16 +75,18 @@ class Window {
 
             if (solving_maze) {
                 // Call update
-                ArrayList<Integer> incoming_updates = solution.update();
-                // If the list of updates is empty, then we have finished generating the maze
-                if (incoming_updates.isEmpty()) {
-                    solving_maze = false;
-                    fading = true;
-                }
-                else {
-                    // Update grid to match visually
-                    updateVisualGrid(incoming_updates);
-                }
+                // ArrayList<Integer> incoming_updates = solution.update();
+                // // If the list of updates is empty, then we have finished generating the maze
+                // if (incoming_updates.isEmpty()) {
+                //     solving_maze = false;
+                //     fading = true;
+                // }
+                // else {
+                //     // Update grid to match visually
+                //     updateVisualGrid(incoming_updates);
+                // }
+                solution.DFS();
+                solving_maze = false;
             }
 
             // Check to see if we should fade the sound for an outro
