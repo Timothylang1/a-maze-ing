@@ -6,7 +6,7 @@ public class Point {
 
     // Unlike Kilt Graphics where points can have a decimal x and y,
     // this class will only have integer x and y
-    Point(int x, int y) {
+    public Point(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -17,5 +17,9 @@ public class Point {
 
     public int getY() {
         return y;
+    }
+
+    public boolean equals(Point p) {
+        return p.getX() == x && p.getY() == y;
     }
 }

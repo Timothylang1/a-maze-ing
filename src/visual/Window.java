@@ -1,11 +1,12 @@
 package visual;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.awt.Color;
 
 import edu.macalester.graphics.*;
 import edu.macalester.graphics.ui.*;
 import maze.MazeGenerator;
-import solution.Solution;
+import solution.DFS;
 
 
 /* 
@@ -27,7 +28,7 @@ class Window {
 
     // Other class creations
     private MazeGenerator generator = new MazeGenerator();
-    private Solution solution = new Solution();
+    private DFS solution = new DFS();
     private Sound sound = new Sound();
     private boolean fading = false;
 
@@ -38,7 +39,7 @@ class Window {
     private TextField grid_y = new TextField();
     private GraphicsText actual_grid_size = new GraphicsText();
     private Button generate_maze = new Button("Generate Maze");
-    private Button solve_maze_BFS = new Button("Solve Maze BFS");
+    private Button solve_maze_BFS = new Button("Solve Maze DFS");
     private CanvasWindow canvas = new CanvasWindow("a-maze-ing", CANVAS_WIDTH, CANVAS_HEIGHT);
 
     // Pacing variables
@@ -48,6 +49,8 @@ class Window {
     private double updates_per_frame;
     private int current_update_iteration;
     private double current_update_checkpoint;
+    private int current_update_iteration_solution;
+    private double current_update_checkpoint_solution;
 
     public Window() {
         setupUI();
@@ -74,19 +77,25 @@ class Window {
             }
 
             if (solving_maze) {
-                // Call update
-                // ArrayList<Integer> incoming_updates = solution.update();
-                // // If the list of updates is empty, then we have finished generating the maze
-                // if (incoming_updates.isEmpty()) {
-                //     solving_maze = false;
-                //     fading = true;
-                // }
-                // else {
-                //     // Update grid to match visually
-                //     updateVisualGrid(incoming_updates);
-                // }
-                solution.DFS();
-                solving_maze = false;
+
+                // While loop will call updates as many times as nessecary to ensure that we are on track to finishing completing the maze in TOTAL_SECONDS_TO_SOLVE_MAZE amount of time
+                while (updates_per_frame * current_update_checkpoint_solution > current_update_iteration_solution) {
+                    // Call update
+                    ArrayList<Integer> incoming_updates = solution.update();
+                    // If the list of updates is empty, then we have finished generating the maze
+                    if (incoming_updates.isEmpty()) {
+                        solving_maze = false;
+                        fading = true;
+                        updateVisualGrid(new ArrayList<>(Arrays.asList(0, 0, 2)));
+                    }
+                    else {
+                        // Update grid to match visually
+                        updateVisualGrid(incoming_updates);
+                    }
+                    // Update tracker for pacing
+                    current_update_iteration_solution++;
+                }
+                current_update_checkpoint_solution += 1;
             }
 
             // Check to see if we should fade the sound for an outro
@@ -155,6 +164,10 @@ class Window {
      */
     private void solve() {
         sound.start(); // Starts lit soundtrack
+        updateVisualGrid(solution.reset(grid_size_x, grid_size_y));
+        // Update start and end node back to original because they might have been removed in the solution.reset()
+        updateVisualGrid(new ArrayList<Integer>(Arrays.asList(0, 0, 2)));
+        updateVisualGrid(new ArrayList<Integer>(Arrays.asList(grid_size_x - 1, grid_size_y  - 1, 3)));
         solving_maze = true;
         fading = false;
     }
@@ -214,6 +227,8 @@ class Window {
      */
     private void startMaze() {
         sound.start(); // Starts lit soundtrack
+        solution.reset(grid_size_x, grid_size_y);
+        solving_maze = false;
         generating_maze = true;
         fading = false;
         updates_per_second();
@@ -231,6 +246,8 @@ class Window {
     private void createGrid() {
         actual_grid_size.setText("Grid size: " + Integer.toString(grid_size_x) + "x" + Integer.toString(grid_size_y));
         generating_maze = false;
+        solving_maze = false;
+        solution.reset(grid_size_x, grid_size_y);
         fading = true;
         generateGrid();
     }
@@ -276,6 +293,8 @@ class Window {
         // Reset trackers back to 0
         current_update_iteration = 0;
         current_update_checkpoint = 0;
+        current_update_iteration_solution = 0;
+        current_update_checkpoint_solution = 0;
     }
 
 

@@ -210,7 +210,7 @@ public class MazeGenerator {
      * and the top point 
      * 
      * @param point
-     * @return
+     * @return surroundingPoints
      */
     private ArrayList<Point> generateSurroundingPoints(Point point) {
         Point surRightPoint = new Point(point.getX() + 1, point.getY());
